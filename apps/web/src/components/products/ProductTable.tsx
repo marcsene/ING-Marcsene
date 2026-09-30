@@ -2,9 +2,15 @@ import type { Product } from "@ing-marcsene/types";
 
 interface ProductTableProps {
   products: Product[];
+  onEdit: (product: Product) => void;
+  onDelete: (productId: string) => void;
 }
 
-export function ProductTable({ products }: ProductTableProps) {
+export function ProductTable({
+  products,
+  onEdit,
+  onDelete,
+}: ProductTableProps) {
   return (
     <div className="products-table">
       <div className="products-table-header">
@@ -34,8 +40,19 @@ export function ProductTable({ products }: ProductTableProps) {
           </span>
 
           <div className="product-actions">
-            <button type="button">Editar</button>
-            <button type="button">Eliminar</button>
+            <button
+              type="button"
+              onClick={() => onEdit(product)}
+            >
+              Editar
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onDelete(product.id)}
+            >
+              Eliminar
+            </button>
           </div>
         </div>
       ))}

@@ -44,18 +44,67 @@ export function ProductsPage() {
 
   const [showForm, setShowForm] = useState(false);
 
+  const [editingProduct, setEditingProduct] =
+    useState<Product | null>(null);
+
+  function handleCreateProduct(product: Product) {
+    setProducts((currentProducts) => [
+      ...currentProducts,
+      product,
+    ]);
+
+    setShowForm(false);
+  }
+
+  function handleEditProduct(product: Product) {
+    setEditingProduct(product);
+    setShowForm(true);
+  }
+
+  function handleUpdateProduct(product: Product) {
+    setProducts((currentProducts) =>
+      currentProducts.map((currentProduct) =>
+        currentProduct.id === product.id
+          ? product
+          : currentProduct,
+      ),
+    );
+
+    setEditingProduct(null);
+    setShowForm(false);
+  }
+
+  function handleDeleteProduct(productId: string) {
+    const confirmed = window.confirm(
+      "¿Estás seguro de que deseas eliminar este producto?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setProducts((currentProducts) =>
+      currentProducts.filter(
+        (product) => product.id !== productId,
+      ),
+    );
+  }
+
+  function handleCancelForm() {
+    setEditingProduct(null);
+    setShowForm(false);
+  }
+
   if (showForm) {
     return (
       <ProductForm
-        onCancel={() => setShowForm(false)}
-        onSubmit={(product) => {
-          setProducts((currentProducts) => [
-            ...currentProducts,
-            product,
-          ]);
-
-          setShowForm(false);
-        }}
+        product={editingProduct ?? undefined}
+        onCancel={handleCancelForm}
+        onSubmit={
+          editingProduct
+            ? handleUpdateProduct
+            : handleCreateProduct
+        }
       />
     );
   }
@@ -70,13 +119,20 @@ export function ProductsPage() {
 
         <button
           type="button"
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setEditingProduct(null);
+            setShowForm(true);
+          }}
         >
           Nuevo producto
         </button>
       </div>
 
-      <ProductTable products={products} />
+      <ProductTable
+        products={products}
+        onEdit={handleEditProduct}
+        onDelete={handleDeleteProduct}
+      />
     </section>
   );
 }
