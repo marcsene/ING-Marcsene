@@ -215,3 +215,112 @@
 .product-actions button:hover {
   background: #f3f4f6;
 }
+/* Product form */
+
+.product-form {
+  max-width: 760px;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.product-form-header {
+  margin-bottom: 28px;
+}
+
+.product-form-header h2 {
+  margin-bottom: 6px;
+  font-size: 1.5rem;
+  color: #172033;
+}
+
+.product-form-header p {
+  color: #6b7280;
+}
+
+.product-form form {
+  display: grid;
+  gap: 20px;
+}
+
+.form-group {
+  display: grid;
+  gap: 7px;
+}
+
+.form-group label {
+  color: #172033;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #172033;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #172033;
+  box-shadow: 0 0 0 3px rgba(23, 32, 51, 0.08);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.form-actions button {
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.form-actions button[type="button"] {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #172033;
+}
+
+.form-actions button[type="button"]:hover {
+  background: #f3f4f6;
+}
+
+.form-actions button[type="submit"] {
+  border: 0;
+  background: #172033;
+  color: #ffffff;
+}
+
+.form-actions button[type="submit"]:hover {
+  background: #26334d;
+}
+
+@media (max-width: 640px) {
+  .product-form {
+    padding: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}

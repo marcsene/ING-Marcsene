@@ -1,7 +1,9 @@
+import { useState } from "react";
 import type { Product } from "@ing-marcsene/types";
+import { ProductForm } from "../components/products/ProductForm";
 import { ProductTable } from "../components/products/ProductTable";
 
-const products: Product[] = [
+const initialProducts: Product[] = [
   {
     id: "1",
     name: "Arroz 1 Kg",
@@ -37,6 +39,27 @@ const products: Product[] = [
 ];
 
 export function ProductsPage() {
+  const [products, setProducts] =
+    useState<Product[]>(initialProducts);
+
+  const [showForm, setShowForm] = useState(false);
+
+  if (showForm) {
+    return (
+      <ProductForm
+        onCancel={() => setShowForm(false)}
+        onSubmit={(product) => {
+          setProducts((currentProducts) => [
+            ...currentProducts,
+            product,
+          ]);
+
+          setShowForm(false);
+        }}
+      />
+    );
+  }
+
   return (
     <section className="products-page">
       <div className="page-heading">
@@ -45,7 +68,12 @@ export function ProductsPage() {
           <p>Administra los productos de tu negocio.</p>
         </div>
 
-        <button type="button">Nuevo producto</button>
+        <button
+          type="button"
+          onClick={() => setShowForm(true)}
+        >
+          Nuevo producto
+        </button>
       </div>
 
       <ProductTable products={products} />
