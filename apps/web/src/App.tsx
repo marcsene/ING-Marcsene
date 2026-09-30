@@ -1,11 +1,11 @@
 import "./App.css";
 import { MainLayout } from "./layouts/MainLayout";
-import { DashboardPage } from "./pages/DashboardPage";
+import { ProductsPage } from "./pages/ProductsPage";
 
 function App() {
   return (
     <MainLayout>
-      <DashboardPage />
+      <ProductsPage />
     </MainLayout>
   );
 }
