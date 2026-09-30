@@ -1,3 +1,4 @@
+
 const stats = [
   { label: "Ventas del mes", value: "$0" },
   { label: "Productos", value: "0" },
