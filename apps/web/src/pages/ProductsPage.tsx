@@ -1,59 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Product } from "@ing-marcsene/types";
+
 import { ProductForm } from "../components/products/ProductForm";
 import { ProductTable } from "../components/products/ProductTable";
-
-const initialProducts: Product[] = [
-  {
-    id: "1",
-    name: "Arroz 1 Kg",
-    categoryId: "alimentos",
-    price: 1500,
-    stock: 25,
-    active: true,
-  },
-  {
-    id: "2",
-    name: "Coca-Cola 1.5 L",
-    categoryId: "bebidas",
-    price: 1800,
-    stock: 12,
-    active: true,
-  },
-  {
-    id: "3",
-    name: "Detergente 1 Kg",
-    categoryId: "limpieza",
-    price: 3990,
-    stock: 4,
-    active: true,
-  },
-  {
-    id: "4",
-    name: "Pan Molde",
-    categoryId: "alimentos",
-    price: 2200,
-    stock: 18,
-    active: true,
-  },
-];
+import {
+  createProduct,
+  getProducts,
+} from "../services/api/productsApi";
 
 export function ProductsPage() {
-  const [products, setProducts] =
-    useState<Product[]>(initialProducts);
-
+  const [products, setProducts] = useState<Product[]>([]);
   const [showForm, setShowForm] = useState(false);
-
   const [editingProduct, setEditingProduct] =
     useState<Product | null>(null);
 
-  function handleCreateProduct(product: Product) {
-    setProducts((currentProducts) => [
-      ...currentProducts,
-      product,
-    ]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    setShowForm(false);
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const data = await getProducts();
+
+        setProducts(data);
+      } catch {
+        setError("No se pudieron cargar los productos.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadProducts();
+  }, []);
+
+  async function handleCreateProduct(product: Product) {
+    try {
+      const createdProduct = await createProduct(product);
+
+      setProducts((currentProducts) => [
+        ...currentProducts,
+        createdProduct,
+      ]);
+
+      setShowForm(false);
+    } catch {
+      setError("No se pudo crear el producto.");
+    }
   }
 
   function handleEditProduct(product: Product) {
@@ -74,7 +66,7 @@ export function ProductsPage() {
     setShowForm(false);
   }
 
-  function handleDeleteProduct(productId: string) {
+  function handleDeleteProduct(productId: number | string) {
     const confirmed = window.confirm(
       "¿Estás seguro de que deseas eliminar este producto?",
     );
@@ -93,6 +85,22 @@ export function ProductsPage() {
   function handleCancelForm() {
     setEditingProduct(null);
     setShowForm(false);
+  }
+
+  if (loading) {
+    return (
+      <section className="products-page">
+        <p>Cargando productos...</p>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="products-page">
+        <p>{error}</p>
+      </section>
+    );
   }
 
   if (showForm) {

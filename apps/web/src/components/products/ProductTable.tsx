@@ -3,7 +3,7 @@ import type { Product } from "@ing-marcsene/types";
 interface ProductTableProps {
   products: Product[];
   onEdit: (product: Product) => void;
-  onDelete: (productId: string) => void;
+  onDelete: (productId: number | string) => void;
 }
 
 export function ProductTable({
@@ -25,10 +25,9 @@ export function ProductTable({
       {products.map((product) => (
         <div className="products-table-row" key={product.id}>
           <span>{product.name}</span>
-          <span>{product.categoryId}</span>
+          <span>{product.category_name}</span>
           <span>${product.price}</span>
           <span>{product.stock}</span>
-
           <span
             className={`product-status ${
               product.active
@@ -40,17 +39,11 @@ export function ProductTable({
           </span>
 
           <div className="product-actions">
-            <button
-              type="button"
-              onClick={() => onEdit(product)}
-            >
+            <button type="button" onClick={() => onEdit(product)}>
               Editar
             </button>
 
-            <button
-              type="button"
-              onClick={() => onDelete(product.id)}
-            >
+            <button type="button" onClick={() => onDelete(product.id)}>
               Eliminar
             </button>
           </div>

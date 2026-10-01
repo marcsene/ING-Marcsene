@@ -14,8 +14,8 @@ export function ProductForm({
 }: ProductFormProps) {
   const [name, setName] = useState(product?.name ?? "");
 
-  const [categoryId, setCategoryId] = useState(
-    product?.categoryId ?? "",
+  const [category, setCategory] = useState(
+    product?.category.toString() ?? "",
   );
 
   const [price, setPrice] = useState(
@@ -40,7 +40,7 @@ export function ProductForm({
     const updatedProduct: Product = {
       id: product?.id ?? crypto.randomUUID(),
       name,
-      categoryId,
+      category: Number(category),
       price: Number(price),
       stock: Number(stock),
       active: active === "true",
@@ -83,9 +83,9 @@ export function ProductForm({
           <select
             id="category"
             name="category"
-            value={categoryId}
+            value={category}
             onChange={(event) =>
-              setCategoryId(event.target.value)
+              setCategory(event.target.value)
             }
             required
           >
@@ -93,15 +93,15 @@ export function ProductForm({
               Seleccionar categoría
             </option>
 
-            <option value="alimentos">
+            <option value="1">
               Alimentos
             </option>
 
-            <option value="bebidas">
+            <option value="2">
               Bebidas
             </option>
 
-            <option value="limpieza">
+            <option value="3">
               Limpieza
             </option>
           </select>
