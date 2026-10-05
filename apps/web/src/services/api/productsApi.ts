@@ -29,3 +29,39 @@ export async function createProduct(
 
   return response.json();
 }
+
+export async function updateProduct(
+  productId: number | string,
+  product: Omit<Product, "id" | "category_name">,
+): Promise<Product> {
+  const response = await fetch(
+    `${API_URL}/products/${productId}/`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(product),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("No se pudo actualizar el producto.");
+  }
+
+  return response.json();
+}
+export async function deleteProduct(
+  productId: number | string,
+): Promise<void> {
+  const response = await fetch(
+    `${API_URL}/products/${productId}/`,
+    {
+      method: "DELETE",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("No se pudo eliminar el producto.");
+  }
+}
