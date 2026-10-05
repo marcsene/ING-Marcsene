@@ -65,3 +65,20 @@ export async function deleteProduct(
     throw new Error("No se pudo eliminar el producto.");
   }
 }
+export interface Category {
+  id: number;
+  name: string;
+  active: boolean;
+}
+
+export async function getCategories(): Promise<Category[]> {
+  const response = await fetch(
+    `${API_URL}/products/categories/`,
+  );
+
+  if (!response.ok) {
+    throw new Error("No se pudieron obtener las categorías.");
+  }
+
+  return response.json();
+}

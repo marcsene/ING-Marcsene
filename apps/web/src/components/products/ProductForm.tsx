@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Product } from "@ing-marcsene/types";
+
+import { getCategories } from "../../services/api/productsApi";
+import type { Category } from "../../services/api/productsApi";
 
 interface ProductFormProps {
   product?: Product;
@@ -30,7 +33,24 @@ export function ProductForm({
     product?.active ? "true" : "false",
   );
 
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+
   const isEditing = Boolean(product);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const data = await getCategories();
+
+        setCategories(data);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    }
+
+    loadCategories();
+  }, []);
 
   function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
@@ -87,23 +107,22 @@ export function ProductForm({
             onChange={(event) =>
               setCategory(event.target.value)
             }
+            disabled={categoriesLoading}
             required
           >
             <option value="">
-              Seleccionar categoría
+              {categoriesLoading
+                ? "Cargando categorías..."
+                : "Seleccionar categoría"}
             </option>
 
-            <option value="1">
-              Alimentos
-            </option>
-
-            <option value="2">
-              Bebidas
-            </option>
-
-            <option value="3">
-              Limpieza
-            </option>
+            {categories
+              .filter((item) => item.active)
+              .map((item) => (
+                <option value={item.id} key={item.id}>
+                  {item.name}
+                </option>
+              ))}
           </select>
         </div>
 
@@ -150,10 +169,7 @@ export function ProductForm({
         </div>
 
         <div className="form-actions">
-          <button
-            type="button"
-            onClick={onCancel}
-          >
+          <button type="button" onClick={onCancel}>
             Cancelar
           </button>
 
