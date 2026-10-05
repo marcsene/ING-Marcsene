@@ -26,9 +26,7 @@ class Product(models.Model):
         decimal_places=2,
     )
     stock = models.PositiveIntegerField(default=0)
-    image_url = models.URLField(
-        blank=True,
-    )
+    image_url = models.URLField(blank=True)
     active = models.BooleanField(default=True)
 
     class Meta:

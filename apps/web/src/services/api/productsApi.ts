@@ -51,6 +51,20 @@ export async function updateProduct(
 
   return response.json();
 }
+export async function deleteCategory(
+  categoryId: number,
+): Promise<void> {
+  const response = await fetch(
+    `${API_URL}/products/categories/${categoryId}/`,
+    {
+      method: "DELETE",
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("No se pudo eliminar la categoría.");
+  }
+}
 export async function deleteProduct(
   productId: number | string,
 ): Promise<void> {
@@ -78,6 +92,47 @@ export async function getCategories(): Promise<Category[]> {
 
   if (!response.ok) {
     throw new Error("No se pudieron obtener las categorías.");
+  }
+
+  return response.json();
+}
+export async function createCategory(
+  category: Omit<Category, "id">,
+): Promise<Category> {
+  const response = await fetch(
+    `${API_URL}/products/categories/`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(category),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("No se pudo crear la categoría.");
+  }
+
+  return response.json();
+}
+export async function updateCategory(
+  categoryId: number,
+  category: Omit<Category, "id">,
+): Promise<Category> {
+  const response = await fetch(
+    `${API_URL}/products/categories/${categoryId}/`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(category),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("No se pudo actualizar la categoría.");
   }
 
   return response.json();

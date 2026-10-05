@@ -9,6 +9,11 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
 
 
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
 class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
