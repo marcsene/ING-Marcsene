@@ -1,5 +1,8 @@
 {
   "name": "@ing-marcsene/api",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "turbo": "^2.11.7"
+  }
 }

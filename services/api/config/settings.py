@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "products",
     "customers.apps.CustomersConfig",
+    "sales.apps.SalesConfig",
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
