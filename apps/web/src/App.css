@@ -1255,3 +1255,107 @@
     align-items: flex-start;
   }
 }
+/* ========================================
+   RESPONSIVE GENERAL - MOBILE
+======================================== */
+
+@media (max-width: 768px) {
+  .app-header {
+    min-height: 72px;
+    padding: 14px 18px;
+    gap: 12px;
+  }
+
+  .app-brand {
+    min-width: 0;
+  }
+
+  .app-brand strong {
+    font-size: 20px;
+  }
+
+  .app-brand span {
+    font-size: 13px;
+  }
+
+  .app-user {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .app-body {
+    display: block;
+  }
+
+  .app-sidebar {
+    width: 100%;
+    padding: 10px 12px;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .sidebar-link {
+    width: auto;
+    min-width: max-content;
+    padding: 10px 14px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .app-content {
+    width: 100%;
+    padding: 20px 14px;
+    overflow-x: hidden;
+  }
+
+  .customers-page,
+  .categories-page,
+  .inventory-page,
+  .sales-page {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .customer-card,
+  .category-card,
+  .inventory-card,
+  .sales-card,
+  .new-sale-form,
+  .module-empty-state {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-header {
+    align-items: flex-start;
+  }
+
+  .app-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .app-user {
+    margin-left: auto;
+  }
+
+  .app-content {
+    padding: 16px 10px;
+  }
+
+  .customer-card,
+  .category-card,
+  .inventory-card,
+  .sales-card,
+  .new-sale-form {
+    padding: 16px;
+    border-radius: 12px;
+  }
+}
