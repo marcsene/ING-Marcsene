@@ -1,3 +1,4 @@
+import { API_URL } from "./apiConfig";
 export interface Customer {
   id: number;
   name: string;
@@ -7,8 +8,6 @@ export interface Customer {
   active: boolean;
   created_at: string;
 }
-
-const API_URL = "http://127.0.0.1:8000/api";
 
 export async function getCustomers(): Promise<Customer[]> {
   const response = await fetch(`${API_URL}/customers/`);
