@@ -1359,3 +1359,65 @@
     border-radius: 12px;
   }
 }
+/* ================================
+   RESPONSIVE MOBILE
+   ================================ */
+
+@media (max-width: 768px) {
+  .app-body {
+    display: block;
+  }
+
+  .app-sidebar {
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    overflow: hidden;
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px 12px;
+    gap: 8px;
+    scrollbar-width: none;
+  }
+
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar-link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    width: auto;
+    min-width: max-content;
+    padding: 12px 18px;
+  }
+
+  .app-content {
+    width: 100%;
+    min-width: 0;
+    padding: 20px 16px;
+  }
+
+  .app-header {
+    min-height: 90px;
+    padding: 18px 20px;
+  }
+
+  .app-brand {
+    gap: 4px;
+  }
+
+  .app-brand span {
+    display: block;
+  }
+
+  .app-user {
+    white-space: nowrap;
+  }
+}
