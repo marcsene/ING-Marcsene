@@ -7,7 +7,19 @@
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
 }
+.app-brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
 
+.app-brand-logo {
+  display: block;
+  width: 190px;
+  height: auto;
+  max-height: 58px;
+  object-fit: contain;
+}
 .app-brand {
   display: flex;
   align-items: baseline;
@@ -2303,4 +2315,17 @@
     align-items: stretch;
     flex-direction: column;
   }
+}
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 20px 18px;
+}
+
+.sidebar-brand-icon {
+  display: block;
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
 }

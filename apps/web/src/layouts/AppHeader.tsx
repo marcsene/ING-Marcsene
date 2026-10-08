@@ -1,4 +1,5 @@
-﻿import logo from "../assets/brand/ing-marcsene-logo.png";
+import logo from "../assets/brand/ing-marcsene-logo.png";
+
 
 export function AppHeader() {
   return (

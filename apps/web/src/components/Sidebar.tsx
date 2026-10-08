@@ -1,4 +1,5 @@
 import { useState } from "react";
+import logoIcon from "../assets/brand/ing-marcsene-icon.png";
 
 interface SidebarProps {
   onNavigate: (page: string) => void;
@@ -25,6 +26,14 @@ export function Sidebar({ onNavigate }: SidebarProps) {
 
   return (
     <aside className="app-sidebar">
+      <div className="sidebar-brand">
+        <img
+          src={logoIcon}
+          alt="ING.Marcsene"
+          className="sidebar-brand-icon"
+        />
+      </div>
+
       <nav className="sidebar-nav">
         {menuItems.map((item) => (
           <button

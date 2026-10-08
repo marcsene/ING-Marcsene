@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "accounts.apps.AccountsConfig",
     "products",
     "customers.apps.CustomersConfig",
     "sales.apps.SalesConfig",
@@ -191,3 +192,9 @@ CORS_ALLOWED_ORIGINS += [
     ).split(",")
     if origin.strip()
 ]
+# REST Framework
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}

@@ -1,4 +1,5 @@
-import { API_URL } from "./apiConfig";
+import { API_URL, getAccessToken } from "./apiConfig";
+
 export interface Customer {
   id: number;
   name: string;
@@ -9,11 +10,28 @@ export interface Customer {
   created_at: string;
 }
 
+function getAuthHeaders(): HeadersInit {
+  const token = getAccessToken();
+
+  return token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
+}
+
 export async function getCustomers(): Promise<Customer[]> {
-  const response = await fetch(`${API_URL}/customers/`);
+  const response = await fetch(
+    `${API_URL}/customers/`,
+    {
+      headers: getAuthHeaders(),
+    },
+  );
 
   if (!response.ok) {
-    throw new Error("No se pudieron obtener los clientes.");
+    throw new Error(
+      "No se pudieron obtener los clientes.",
+    );
   }
 
   return response.json();
@@ -22,16 +40,22 @@ export async function getCustomers(): Promise<Customer[]> {
 export async function createCustomer(
   customer: Omit<Customer, "id" | "created_at">,
 ): Promise<Customer> {
-  const response = await fetch(`${API_URL}/customers/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `${API_URL}/customers/`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeaders(),
+      },
+      body: JSON.stringify(customer),
     },
-    body: JSON.stringify(customer),
-  });
+  );
 
   if (!response.ok) {
-    throw new Error("No se pudo crear el cliente.");
+    throw new Error(
+      "No se pudo crear el cliente.",
+    );
   }
 
   return response.json();
@@ -47,13 +71,16 @@ export async function updateCustomer(
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(customer),
     },
   );
 
   if (!response.ok) {
-    throw new Error("No se pudo actualizar el cliente.");
+    throw new Error(
+      "No se pudo actualizar el cliente.",
+    );
   }
 
   return response.json();
@@ -66,10 +93,13 @@ export async function deleteCustomer(
     `${API_URL}/customers/${customerId}/`,
     {
       method: "DELETE",
+      headers: getAuthHeaders(),
     },
   );
 
   if (!response.ok) {
-    throw new Error("No se pudo eliminar el cliente.");
+    throw new Error(
+      "No se pudo eliminar el cliente.",
+    );
   }
 }
