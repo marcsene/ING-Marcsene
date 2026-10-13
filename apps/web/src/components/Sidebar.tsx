@@ -1,7 +1,8 @@
-import { useState } from "react";
+﻿
 import logoIcon from "../assets/brand/ing-marcsene-icon.png";
 
 interface SidebarProps {
+  currentPage: string;
   onNavigate: (page: string) => void;
 }
 
@@ -16,14 +17,10 @@ const menuItems = [
   "Configuración",
 ];
 
-export function Sidebar({ onNavigate }: SidebarProps) {
-  const [activePage, setActivePage] = useState("Productos");
-
-  function handleNavigate(page: string) {
-    setActivePage(page);
-    onNavigate(page);
-  }
-
+export function Sidebar({
+  currentPage,
+  onNavigate,
+}: SidebarProps) {
   return (
     <aside className="app-sidebar">
       <div className="sidebar-brand">
@@ -34,15 +31,16 @@ export function Sidebar({ onNavigate }: SidebarProps) {
         />
       </div>
 
-      <nav className="sidebar-nav">
+      <nav className="sidebar-nav" aria-label="Navegación principal">
         {menuItems.map((item) => (
           <button
             className={`sidebar-link ${
-              activePage === item ? "active" : ""
+              currentPage === item ? "active" : ""
             }`}
             key={item}
             type="button"
-            onClick={() => handleNavigate(item)}
+            aria-current={currentPage === item ? "page" : undefined}
+            onClick={() => onNavigate(item)}
           >
             {item}
           </button>
@@ -51,3 +49,5 @@ export function Sidebar({ onNavigate }: SidebarProps) {
     </aside>
   );
 }
+
+

@@ -180,15 +180,17 @@ MAILERS = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://192.168.1.6:5173",
 ]
 
-CORS_ALLOWED_ORIGINS += [
-    origin.strip()
-    for origin in os.getenv(
-        "CORS_ALLOWED_ORIGINS",
-        "",
+
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv(
+        "DJANGO_ALLOWED_HOSTS",
+        "localhost,127.0.0.1,192.168.1.6",
     ).split(",")
-    if origin.strip()
+    if host.strip()
 ]
 # REST Framework
 REST_FRAMEWORK = {

@@ -1,0 +1,51 @@
+
+import logoIcon from "../assets/brand/ing-marcsene-icon.png";
+
+interface SidebarProps {
+  currentPage: string;
+  onNavigate: (page: string) => void;
+}
+
+const menuItems = [
+  "Dashboard",
+  "Productos",
+  "Categorías",
+  "Inventario",
+  "Ventas",
+  "Clientes",
+  "Reportes",
+  "Configuración",
+];
+
+export function Sidebar({
+  currentPage,
+  onNavigate,
+}: SidebarProps) {
+  return (
+    <aside className="app-sidebar">
+      <div className="sidebar-brand">
+        <img
+          src={logoIcon}
+          alt="ING.Marcsene"
+          className="sidebar-brand-icon"
+        />
+      </div>
+
+      <nav className="sidebar-nav" aria-label="Navegación principal">
+        {menuItems.map((item) => (
+          <button
+            className={`sidebar-link ${
+              currentPage === item ? "active" : ""
+            }`}
+            key={item}
+            type="button"
+            aria-current={currentPage === item ? "page" : undefined}
+            onClick={() => onNavigate(item)}
+          >
+            {item}
+          </button>
+        ))}
+      </nav>
+    </aside>
+  );
+}

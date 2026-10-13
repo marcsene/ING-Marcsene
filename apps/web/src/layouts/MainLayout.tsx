@@ -1,3 +1,4 @@
+﻿
 import { useState } from "react";
 import type { ReactNode } from "react";
 
@@ -64,7 +65,10 @@ export function MainLayout({
       <AppHeader />
 
       <div className="app-body">
-        <Sidebar onNavigate={setCurrentPage} />
+        <Sidebar
+          currentPage={currentPage}
+          onNavigate={setCurrentPage}
+        />
 
         <main className="app-content">
           {renderPage()}
@@ -73,3 +77,4 @@ export function MainLayout({
     </div>
   );
 }
+
