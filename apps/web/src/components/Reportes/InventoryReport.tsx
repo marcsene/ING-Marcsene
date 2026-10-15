@@ -1,18 +1,21 @@
+
 import { useEffect, useState } from "react";
-import { getProducts } from "../../services/api/productsApi";
 import type { Product } from "@ing-marcsene/types";
+
+import { getProducts } from "../../services/api/productsApi";
+import { exportToExcel } from "../../utils/reportsExport";
+
+const LOW_STOCK_LIMIT = 5;
 
 export function InventoryReport() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [exportError, setExportError] = useState("");
 
   useEffect(() => {
     async function loadProducts() {
       try {
-        setLoading(true);
-        setError("");
-
         const data = await getProducts();
         setProducts(data);
       } catch {
@@ -26,40 +29,70 @@ export function InventoryReport() {
   }, []);
 
   const totalUnits = products.reduce(
-    (total, product) => total + product.stock,
+    (total, product) => total + Number(product.stock),
     0,
   );
 
   const inventoryValue = products.reduce(
-    (total, product) => total + product.stock * product.price,
+    (total, product) =>
+      total + Number(product.price) * Number(product.stock),
     0,
   );
 
   const lowStockProducts = products.filter(
-    (product) => product.stock <= 5,
+    (product) => product.stock <= LOW_STOCK_LIMIT,
   );
 
-  const activeProducts = products.filter(
-    (product) => product.active,
-  );
+  const activeProducts = products.filter((product) => product.active);
 
-  if (loading) {
-    return (
-      <section className="inventory-report">
-        <div className="report-section-heading">
-          <h2>Reporte de inventario</h2>
-          <p>Cargando información del inventario...</p>
-        </div>
-      </section>
-    );
+  const formatCurrency = (value: number) =>
+    `$${value.toLocaleString("es-CL", {
+      maximumFractionDigits: 0,
+    })}`;
+
+  function handleExport() {
+    setExportError("");
+
+    if (products.length === 0) {
+      setExportError("No hay productos para exportar.");
+      return;
+    }
+
+    try {
+      const rows = products.map((product) => ({
+        Producto: product.name,
+        Categoría: product.category_name || "Sin categoría",
+        Precio: Number(product.price),
+        Stock: Number(product.stock),
+        Estado: !product.active
+          ? "Inactivo"
+          : product.stock <= LOW_STOCK_LIMIT
+            ? "Stock bajo"
+            : "Disponible",
+        "Valor del inventario":
+          Number(product.price) * Number(product.stock),
+      }));
+
+      exportToExcel(
+        `inventario-${new Date().toISOString().slice(0, 10)}`,
+        "Inventario",
+        rows,
+      );
+    } catch {
+      setExportError("No se pudo generar el archivo Excel.");
+    }
   }
 
-  if (error) {
+  if (loading || error) {
     return (
       <section className="inventory-report">
         <div className="report-section-heading">
           <h2>Reporte de inventario</h2>
-          <p>{error}</p>
+          <p>
+            {loading
+              ? "Cargando información del inventario..."
+              : error}
+          </p>
         </div>
       </section>
     );
@@ -70,18 +103,22 @@ export function InventoryReport() {
       <div className="report-section-heading">
         <div>
           <h2>Reporte de inventario</h2>
-          <p>
-            Consulta el estado y disponibilidad de los productos.
-          </p>
+          <p>Consulta el estado y disponibilidad de los productos.</p>
         </div>
+
+        <button type="button" onClick={handleExport}>
+          📥 Exportar a Excel
+        </button>
       </div>
+
+      {exportError && <p role="alert">{exportError}</p>}
 
       <div className="inventory-report-summary">
         <article className="inventory-report-stat">
           <span>📦</span>
           <div>
-            <small>Productos</small>
-            <strong>{products.length}</strong>
+            <small>Productos registrados</small>
+            <strong>{products.length.toLocaleString("es-CL")}</strong>
           </div>
         </article>
 
@@ -89,25 +126,23 @@ export function InventoryReport() {
           <span>📊</span>
           <div>
             <small>Unidades disponibles</small>
-            <strong>{totalUnits}</strong>
+            <strong>{totalUnits.toLocaleString("es-CL")}</strong>
           </div>
         </article>
 
         <article className="inventory-report-stat">
           <span>⚠️</span>
           <div>
-            <small>Stock bajo</small>
-            <strong>{lowStockProducts.length}</strong>
+            <small>Productos con stock bajo</small>
+            <strong>{lowStockProducts.length.toLocaleString("es-CL")}</strong>
           </div>
         </article>
 
         <article className="inventory-report-stat">
           <span>💰</span>
           <div>
-            <small>Valor inventario</small>
-            <strong>
-              ${inventoryValue.toLocaleString("es-CL")}
-            </strong>
+            <small>Valor al precio de venta</small>
+            <strong>{formatCurrency(inventoryValue)}</strong>
           </div>
         </article>
       </div>
@@ -123,28 +158,17 @@ export function InventoryReport() {
           </div>
 
           {products.map((product) => (
-            <div
-              className="inventory-report-row"
-              key={product.id}
-            >
+            <div className="inventory-report-row" key={product.id}>
               <span>{product.name}</span>
-
+              <span>{product.category_name || "Sin categoría"}</span>
+              <span>{formatCurrency(Number(product.price))}</span>
+              <span>{Number(product.stock).toLocaleString("es-CL")}</span>
               <span>
-                {product.category_name || "Sin categoría"}
-              </span>
-
-              <span>
-                ${Number(inventoryValue).toLocaleString("es-CL")}
-              </span>
-
-              <span>{product.stock}</span>
-
-              <span>
-                {product.stock <= 5
-                  ? "Stock bajo"
-                  : product.active
-                    ? "Disponible"
-                    : "Inactivo"}
+                {!product.active
+                  ? "Inactivo"
+                  : product.stock <= LOW_STOCK_LIMIT
+                    ? "Stock bajo"
+                    : "Disponible"}
               </span>
             </div>
           ))}
@@ -158,13 +182,8 @@ export function InventoryReport() {
       </div>
 
       <div className="inventory-report-footer">
-        <strong>
-          Productos activos: {activeProducts.length}
-        </strong>
-
-        <span>
-          Productos con stock bajo: {lowStockProducts.length}
-        </span>
+        <strong>Productos activos: {activeProducts.length}</strong>
+        <span>Productos con stock bajo: {lowStockProducts.length}</span>
       </div>
     </section>
   );

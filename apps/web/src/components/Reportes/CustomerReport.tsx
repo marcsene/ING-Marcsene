@@ -1,18 +1,22 @@
+
 import { useEffect, useState } from "react";
-import { getCustomers } from "../../services/api/customersApi";
-import type { Customer } from "../../services/api/customersApi";
+
+import {
+  getCustomers,
+  type Customer,
+} from "../../services/api/customersApi";
+
+import { exportToExcel } from "../../utils/reportsExport";
 
 export function CustomerReport() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [exportError, setExportError] = useState("");
 
   useEffect(() => {
     async function loadCustomers() {
       try {
-        setLoading(true);
-        setError("");
-
         const data = await getCustomers();
         setCustomers(data);
       } catch {
@@ -29,27 +33,48 @@ export function CustomerReport() {
     (customer) => customer.active,
   );
 
-  const inactiveCustomers = customers.filter(
-    (customer) => !customer.active,
-  );
+  const inactiveCount = customers.length - activeCustomers.length;
 
-  if (loading) {
-    return (
-      <section className="customer-report">
-        <div className="report-section-heading">
-          <h2>Reporte de clientes</h2>
-          <p>Cargando información de los clientes...</p>
-        </div>
-      </section>
-    );
+  const formatNumber = (value: number) =>
+    value.toLocaleString("es-CL");
+
+  function handleExport() {
+    setExportError("");
+
+    if (customers.length === 0) {
+      setExportError("No hay clientes para exportar.");
+      return;
+    }
+
+    try {
+      const rows = customers.map((customer) => ({
+        Cliente: customer.name,
+        Email: customer.email || "",
+        Teléfono: customer.phone || "",
+        Dirección: customer.address || "",
+        Estado: customer.active ? "Activo" : "Inactivo",
+      }));
+
+      exportToExcel(
+        `clientes-${new Date().toISOString().slice(0, 10)}`,
+        "Clientes",
+        rows,
+      );
+    } catch {
+      setExportError("No se pudo generar el archivo Excel.");
+    }
   }
 
-  if (error) {
+  if (loading || error) {
     return (
       <section className="customer-report">
         <div className="report-section-heading">
           <h2>Reporte de clientes</h2>
-          <p>{error}</p>
+          <p>
+            {loading
+              ? "Cargando información de los clientes..."
+              : error}
+          </p>
         </div>
       </section>
     );
@@ -60,18 +85,22 @@ export function CustomerReport() {
       <div className="report-section-heading">
         <div>
           <h2>Reporte de clientes</h2>
-          <p>
-            Consulta el estado y la información de tus clientes.
-          </p>
+          <p>Consulta el estado y la información de tus clientes.</p>
         </div>
+
+        <button type="button" onClick={handleExport}>
+          📥 Exportar a Excel
+        </button>
       </div>
+
+      {exportError && <p role="alert">{exportError}</p>}
 
       <div className="customer-report-summary">
         <article className="customer-report-stat">
           <span>👥</span>
           <div>
             <small>Total clientes</small>
-            <strong>{customers.length}</strong>
+            <strong>{formatNumber(customers.length)}</strong>
           </div>
         </article>
 
@@ -79,7 +108,7 @@ export function CustomerReport() {
           <span>✅</span>
           <div>
             <small>Clientes activos</small>
-            <strong>{activeCustomers.length}</strong>
+            <strong>{formatNumber(activeCustomers.length)}</strong>
           </div>
         </article>
 
@@ -87,7 +116,7 @@ export function CustomerReport() {
           <span>🔒</span>
           <div>
             <small>Clientes inactivos</small>
-            <strong>{inactiveCustomers.length}</strong>
+            <strong>{formatNumber(inactiveCount)}</strong>
           </div>
         </article>
       </div>
@@ -103,17 +132,12 @@ export function CustomerReport() {
           </div>
 
           {customers.map((customer) => (
-            <div
-              className="customer-report-row"
-              key={customer.id}
-            >
+            <div className="customer-report-row" key={customer.id}>
               <span>{customer.name}</span>
               <span>{customer.email || "—"}</span>
               <span>{customer.phone || "—"}</span>
               <span>{customer.address || "—"}</span>
-              <span>
-                {customer.active ? "Activo" : "Inactivo"}
-              </span>
+              <span>{customer.active ? "Activo" : "Inactivo"}</span>
             </div>
           ))}
 
@@ -127,11 +151,10 @@ export function CustomerReport() {
 
       <div className="customer-report-footer">
         <strong>
-          Clientes activos: {activeCustomers.length}
+          Clientes activos: {formatNumber(activeCustomers.length)}
         </strong>
-
         <span>
-          Clientes inactivos: {inactiveCustomers.length}
+          Clientes inactivos: {formatNumber(inactiveCount)}
         </span>
       </div>
     </section>

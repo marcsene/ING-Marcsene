@@ -1,18 +1,19 @@
+
 import { useEffect, useState } from "react";
-import { getProducts } from "../../services/api/productsApi";
 import type { Product } from "@ing-marcsene/types";
+
+import { getProducts } from "../../services/api/productsApi";
+import { exportToExcel } from "../../utils/reportsExport";
 
 export function ProductReport() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [exportError, setExportError] = useState("");
 
   useEffect(() => {
     async function loadProducts() {
       try {
-        setLoading(true);
-        setError("");
-
         const data = await getProducts();
         setProducts(data);
       } catch {
@@ -25,50 +26,76 @@ export function ProductReport() {
     loadProducts();
   }, []);
 
-  const activeProducts = products.filter(
-    (product) => product.active,
-  );
-
-  const inactiveProducts = products.filter(
-    (product) => !product.active,
-  );
+  const activeProducts = products.filter((product) => product.active);
+  const inactiveProducts = products.length - activeProducts.length;
 
   const totalUnits = products.reduce(
-    (total, product) => total + product.stock,
+    (total, product) => total + Number(product.stock),
     0,
   );
 
-  const averagePrice =
-    products.length > 0
-      ? products.reduce(
-          (total, product) => total + Number(product.price),
-          0,
-        ) / products.length
-      : 0;
+  const totalPrice = products.reduce(
+    (total, product) => total + Number(product.price),
+    0,
+  );
+
+  const averagePrice = products.length
+    ? totalPrice / products.length
+    : 0;
 
   const inventoryValue = products.reduce(
     (total, product) =>
-      total + product.stock * Number(product.price),
+      total + Number(product.price) * Number(product.stock),
     0,
   );
 
-  if (loading) {
-    return (
-      <section className="product-report">
-        <div className="report-section-heading">
-          <h2>Reporte de productos</h2>
-          <p>Cargando información de los productos...</p>
-        </div>
-      </section>
-    );
+  const formatNumber = (value: number) =>
+    value.toLocaleString("es-CL");
+
+  const formatCurrency = (value: number) =>
+    `$${value.toLocaleString("es-CL", {
+      maximumFractionDigits: 0,
+    })}`;
+
+  function handleExport() {
+    setExportError("");
+
+    if (products.length === 0) {
+      setExportError("No hay productos para exportar.");
+      return;
+    }
+
+    try {
+      const rows = products.map((product) => ({
+        Producto: product.name,
+        Categoría: product.category_name || "Sin categoría",
+        Precio: Number(product.price),
+        Stock: Number(product.stock),
+        Estado: product.active ? "Activo" : "Inactivo",
+        "Valor del inventario":
+          Number(product.price) * Number(product.stock),
+      }));
+
+      exportToExcel(
+        `productos-${new Date().toISOString().slice(0, 10)}`,
+        "Productos",
+        rows,
+      );
+    } catch {
+      setExportError("No se pudo generar el archivo Excel.");
+    }
   }
 
-  if (error) {
+  if (loading || error) {
     return (
       <section className="product-report">
         <div className="report-section-heading">
           <h2>Reporte de productos</h2>
-          <p>{error}</p>
+          <p>
+            {loading
+              ? "Cargando información de los productos..."
+              : error}
+          </p>
         </div>
       </section>
     );
@@ -79,18 +106,22 @@ export function ProductReport() {
       <div className="report-section-heading">
         <div>
           <h2>Reporte de productos</h2>
-          <p>
-            Consulta el estado y la información de tus productos.
-          </p>
+          <p>Consulta el estado y la información de tus productos.</p>
         </div>
+
+        <button type="button" onClick={handleExport}>
+          📥 Exportar a Excel
+        </button>
       </div>
+
+      {exportError && <p role="alert">{exportError}</p>}
 
       <div className="product-report-summary">
         <article className="product-report-stat">
           <span>🛍️</span>
           <div>
             <small>Total productos</small>
-            <strong>{products.length}</strong>
+            <strong>{formatNumber(products.length)}</strong>
           </div>
         </article>
 
@@ -98,7 +129,7 @@ export function ProductReport() {
           <span>✅</span>
           <div>
             <small>Productos activos</small>
-            <strong>{activeProducts.length}</strong>
+            <strong>{formatNumber(activeProducts.length)}</strong>
           </div>
         </article>
 
@@ -106,7 +137,7 @@ export function ProductReport() {
           <span>📦</span>
           <div>
             <small>Unidades disponibles</small>
-            <strong>{totalUnits}</strong>
+            <strong>{formatNumber(totalUnits)}</strong>
           </div>
         </article>
 
@@ -114,9 +145,7 @@ export function ProductReport() {
           <span>💰</span>
           <div>
             <small>Precio promedio</small>
-            <strong>
-              ${averagePrice.toLocaleString("es-CL")}
-            </strong>
+            <strong>{formatCurrency(averagePrice)}</strong>
           </div>
         </article>
       </div>
@@ -132,25 +161,12 @@ export function ProductReport() {
           </div>
 
           {products.map((product) => (
-            <div
-              className="product-report-row"
-              key={product.id}
-            >
+            <div className="product-report-row" key={product.id}>
               <span>{product.name}</span>
-
-              <span>
-                {product.category_name || "Sin categoría"}
-              </span>
-
-              <span>
-                ${Number(product.price).toLocaleString("es-CL")}
-              </span>
-
-              <span>{product.stock}</span>
-
-              <span>
-                {product.active ? "Activo" : "Inactivo"}
-              </span>
+              <span>{product.category_name || "Sin categoría"}</span>
+              <span>{formatCurrency(Number(product.price))}</span>
+              <span>{formatNumber(Number(product.stock))}</span>
+              <span>{product.active ? "Activo" : "Inactivo"}</span>
             </div>
           ))}
 
@@ -163,17 +179,10 @@ export function ProductReport() {
       </div>
 
       <div className="product-report-footer">
-        <strong>
-          Productos activos: {activeProducts.length}
-        </strong>
-
+        <strong>Productos activos: {activeProducts.length}</strong>
+        <span>Productos inactivos: {inactiveProducts}</span>
         <span>
-          Productos inactivos: {inactiveProducts.length}
-        </span>
-
-        <span>
-          Valor inventario: $
-          {inventoryValue.toLocaleString("es-CL")}
+          Valor estimado del inventario: {formatCurrency(inventoryValue)}
         </span>
       </div>
     </section>

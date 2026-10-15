@@ -1,4 +1,5 @@
-import { API_URL, getAccessToken } from "./apiConfig";
+
+import { apiFetch } from "./apiClient";
 
 export interface SaleItem {
   id: number;
@@ -28,28 +29,11 @@ export interface CreateSale {
   items: CreateSaleItem[];
 }
 
-function getAuthHeaders(): HeadersInit {
-  const token = getAccessToken();
-
-  return token
-    ? {
-        Authorization: `Bearer ${token}`,
-      }
-    : {};
-}
-
 export async function getSales(): Promise<Sale[]> {
-  const response = await fetch(
-    `${API_URL}/sales/`,
-    {
-      headers: getAuthHeaders(),
-    },
-  );
+  const response = await apiFetch("/sales/");
 
   if (!response.ok) {
-    throw new Error(
-      "No se pudieron cargar las ventas.",
-    );
+    throw new Error("No se pudieron cargar las ventas.");
   }
 
   return response.json();
@@ -58,17 +42,13 @@ export async function getSales(): Promise<Sale[]> {
 export async function createSale(
   sale: CreateSale,
 ): Promise<Sale> {
-  const response = await fetch(
-    `${API_URL}/sales/`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-      body: JSON.stringify(sale),
+  const response = await apiFetch("/sales/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+    body: JSON.stringify(sale),
+  });
 
   if (!response.ok) {
     const error = await response.text();
@@ -81,17 +61,10 @@ export async function createSale(
 export async function getSale(
   saleId: number,
 ): Promise<Sale> {
-  const response = await fetch(
-    `${API_URL}/sales/${saleId}/`,
-    {
-      headers: getAuthHeaders(),
-    },
-  );
+  const response = await apiFetch(`/sales/${saleId}/`);
 
   if (!response.ok) {
-    throw new Error(
-      "No se pudo cargar la venta.",
-    );
+    throw new Error("No se pudo cargar la venta.");
   }
 
   return response.json();
