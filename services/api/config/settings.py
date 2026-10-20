@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "products",
     "customers.apps.CustomersConfig",
     "sales.apps.SalesConfig",
+    "businesses.apps.BusinessesConfig",
 ]
 
 
@@ -176,8 +177,13 @@ CORS_ALLOWED_ORIGINS = [
 
 
 # Django REST Framework / JWT
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
 }
+

@@ -1,3 +1,4 @@
+
 from rest_framework import serializers
 
 from .models import Category, Product
@@ -19,6 +20,10 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only=True,
     )
 
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.none(),
+    )
+
     class Meta:
         model = Product
         fields = [
@@ -32,3 +37,15 @@ class ProductSerializer(serializers.ModelSerializer):
             "image_url",
             "active",
         ]
+
+    def get_fields(self):
+        fields = super().get_fields()
+        request = self.context.get("request")
+
+        if request and request.user.is_authenticated:
+            fields["category"].queryset = Category.objects.filter(
+                business__owner=request.user,
+                business__active=True,
+            )
+
+        return fields

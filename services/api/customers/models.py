@@ -1,3 +1,4 @@
+
 from django.db import models
 
 
@@ -8,6 +9,14 @@ class Customer(models.Model):
     address = models.CharField(max_length=250, blank=True)
     active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    business = models.ForeignKey(
+        "businesses.Business",
+        on_delete=models.PROTECT,
+        related_name="customers",
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         db_table = "customers"

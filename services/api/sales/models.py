@@ -1,3 +1,4 @@
+
 from django.db import models
 
 from customers.models import Customer
@@ -19,6 +20,13 @@ class Sale(models.Model):
         Customer,
         on_delete=models.PROTECT,
         related_name="sales",
+    )
+    business = models.ForeignKey(
+        "businesses.Business",
+        on_delete=models.PROTECT,
+        related_name="sales",
+        null=True,
+        blank=True,
     )
     status = models.CharField(
         max_length=20,
